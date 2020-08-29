@@ -1,34 +1,29 @@
 {
   "name": "quantifai-inline-code",
-  "version": "1.3.1-mp.1.0.0",
-  "keywords": [
-    "codex editor",
-    "inline",
-    "code",
-    "tool",
-    "editor.js",
-    "editorjs"
-  ],
-  "description": "InlineCode Tool for Editor.js",
+  "version": "1.3.1-mp.2.0.1",
+  "main": "./dist/index.js",
+  "repository": "https://github.com/getquantifai/inline-code",
+  "author": "metaplane",
   "license": "MIT",
-  "repository": "https://github.com/editor-js/inline-code",
-  "main": "./dist/bundle.js",
   "scripts": {
-    "build": "webpack --mode production",
-    "build:dev": "webpack --mode development --watch"
-  },
-  "author": {
-    "name": "CodeX Team",
-    "email": "team@ifmo.su"
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w"
   },
   "devDependencies": {
-    "@babel/core": "^7.3.4",
-    "@babel/preset-env": "^7.3.4",
-    "babel-loader": "^8.0.5",
-    "css-loader": "^1.0.0",
-    "raw-loader": "^3.1.0",
-    "style-loader": "^0.21.0",
-    "webpack": "^4.29.5",
-    "webpack-cli": "^3.2.3"
+    "@rollup/plugin-image": "^2.0.5",
+    "@rollup/plugin-typescript": "^5.0.2",
+    "@types/node": "^14.6.2",
+    "rollup": "^2.26.8",
+    "rollup-plugin-postcss": "^3.1.6",
+    "rollup-plugin-svg-import": "^1.5.1",
+    "rollup-plugin-terser": "^7.0.1",
+    "tslib": "^2.0.1",
+    "typescript": "^4.0.2"
+  },
+  "peerDependencies": {
+    "quantifai-editorjs": "^2.18.0-mp.4.2.0"
+  },
+  "dependencies": {
+    "quantifai-editorjs": "^2.18.0-mp.4.2.0"
   }
 }
