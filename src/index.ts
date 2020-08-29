@@ -1,14 +1,16 @@
 /**
  * Build styles
  */
-require('./index.css').toString();
+import './index.css';
+import { InlineTool, API } from 'quantifai-editorjs';
+import icon from '../assets/icon.svg';
 
 /**
  * Inline Code Tool for the Editor.js
  *
  * Allows to wrap inline fragment and style it somehow.
  */
-class InlineCode {
+export default class InlineCode implements InlineTool {
   /**
    * Class name for term-tag
    *
@@ -16,11 +18,14 @@ class InlineCode {
    */
   static get CSS() {
     return 'inline-code';
-  };
+  }
 
-  /**
-   */
-  constructor({api}) {
+  private api: API;
+  private button: HTMLButtonElement | null;
+  private tag: string;
+  private iconClasses: { base: string; active: string };
+
+  constructor({ api }: { api: API }) {
     this.api = api;
 
     /**
@@ -42,7 +47,7 @@ class InlineCode {
      */
     this.iconClasses = {
       base: this.api.styles.inlineToolButton,
-      active: this.api.styles.inlineToolButtonActive
+      active: this.api.styles.inlineToolButtonActive,
     };
   }
 
@@ -74,12 +79,15 @@ class InlineCode {
    *
    * @param {Range} range - selected fragment
    */
-  surround(range) {
+  surround(range: Range) {
     if (!range) {
       return;
     }
 
-    let termWrapper = this.api.selection.findParentTag(this.tag, InlineCode.CSS);
+    let termWrapper = this.api.selection.findParentTag(
+      this.tag,
+      InlineCode.CSS
+    );
 
     /**
      * If start or end of selection is in the highlighted block
@@ -96,7 +104,7 @@ class InlineCode {
    *
    * @param {Range} range - selected fragment
    */
-  wrap(range) {
+  wrap(range: Range) {
     /**
      * Create a wrapper for highlighting
      */
@@ -110,7 +118,13 @@ class InlineCode {
      *
      * // range.surroundContents(span);
      */
-    span.appendChild(range.extractContents());
+    const isSelectingText = range.startOffset - range.endOffset !== 0;
+
+    if (isSelectingText) {
+      span.appendChild(range.extractContents());
+    } else {
+      span.appendChild(document.createRange().createContextualFragment(' '));
+    }
     range.insertNode(span);
 
     /**
@@ -124,41 +138,43 @@ class InlineCode {
    *
    * @param {HTMLElement} termWrapper - term wrapper tag
    */
-  unwrap(termWrapper) {
+  unwrap(termWrapper: HTMLElement) {
     /**
      * Expand selection to all term-tag
      */
     this.api.selection.expandToTag(termWrapper);
 
     let sel = window.getSelection();
-    let range = sel.getRangeAt(0);
+    if (sel) {
+      let range = sel.getRangeAt(0);
 
-    let unwrappedContent = range.extractContents();
+      let unwrappedContent = range.extractContents();
 
-    /**
-     * Remove empty term-tag
-     */
-    termWrapper.parentNode.removeChild(termWrapper);
+      /**
+       * Remove empty term-tag
+       */
+      termWrapper.parentNode?.removeChild(termWrapper);
 
-    /**
-     * Insert extracted content
-     */
-    range.insertNode(unwrappedContent);
+      /**
+       * Insert extracted content
+       */
+      range.insertNode(unwrappedContent);
 
-    /**
-     * Restore selection
-     */
-    sel.removeAllRanges();
-    sel.addRange(range);
+      /**
+       * Restore selection
+       */
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
   }
 
   /**
    * Check and change Term's state for current selection
    */
-  checkState() {
+  checkState(selection?: Selection): boolean {
     const termTag = this.api.selection.findParentTag(this.tag, InlineCode.CSS);
-
-    this.button.classList.toggle(this.iconClasses.active, !!termTag);
+    this.button?.classList.toggle(this.iconClasses.active, !!termTag);
+    return !!termTag;
   }
 
   /**
@@ -166,7 +182,7 @@ class InlineCode {
    * @return {string}
    */
   get toolboxIcon() {
-    return require('./../assets/icon.svg').default;
+    return icon;
   }
 
   /**
@@ -176,10 +192,8 @@ class InlineCode {
   static get sanitize() {
     return {
       code: {
-        class: InlineCode.CSS
-      }
+        class: InlineCode.CSS,
+      },
     };
   }
 }
-
-module.exports = InlineCode;
