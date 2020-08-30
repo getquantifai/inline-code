@@ -123,7 +123,10 @@ export default class InlineCode implements InlineTool {
     if (isSelectingText) {
       span.appendChild(range.extractContents());
     } else {
-      span.appendChild(document.createRange().createContextualFragment(' '));
+      span.appendChild(
+        document.createRange().createContextualFragment('&nbsp;')
+      );
+      range.insertNode(document.createTextNode('\u00A0'));
     }
     range.insertNode(span);
 
