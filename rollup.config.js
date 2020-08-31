@@ -14,7 +14,11 @@ export default {
     svg({
       stringify: true,
     }),
-    typescript(),
+    typescript({
+      declaration: true,
+      declarationDir: 'dist/',
+      rootDir: 'src/',
+    }),
     postcss({ plugins: [] }),
     terser(),
   ],
